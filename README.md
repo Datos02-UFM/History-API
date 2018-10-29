@@ -1,8 +1,5 @@
-# Backend Improvals
+# History API
 
-Api consulting distinct information about various topics from three different sources:
- - Wikipedia
- - NewsAPI
- - GoogleBooks
+Get user's history activity.
 
 Currently working towards improving its response time!
