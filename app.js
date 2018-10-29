@@ -42,7 +42,7 @@ app.get('/history/:userId', (req, res) => {
       // throw err
     }
     var historyUser = rows.map((row) => {
-      return {"Date": row.fecha, "url": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
+      return {"Date": row.fecha, "Topic": row.topic, "URL": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
     })
     res.json(historyUser)
   })
