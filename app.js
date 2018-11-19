@@ -7,6 +7,7 @@ const mysql = require('mysql')
 const morgan = require('morgan')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
+const endpoint = "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/search/";
  //logs con timings de requests 
 app.use(morgan('short'));
 //sessionId
@@ -42,7 +43,7 @@ app.get('/history/:userId', (req, res) => {
       // throw err
     }
     var historyUser = rows.map((row) => {
-      return {"Date": row.fecha, "Topic": row.topic, "URL": "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/search/" + row.topic + "/" + req.params.userId};
+      return {"Date": row.fecha, "Topic": row.topic, "URL": endpoint + row.topic + "/" + req.params.userId};
     })
     res.json(historyUser)
   })
@@ -63,12 +64,31 @@ app.get('/notification/:userId/:topic', (req, res) => {
       var result = rows.map((row) => {
        return  row.result
       })
+      goFetch(topic, function(returnValue) {
+        if (returnValue != 0){
+          var apiResponse = returnValue;
+          res.json(apiResponse)
+        }
+      }); 
       console.log("mysql got " + result);
     }
-    
-    res.json("oki")
   })
 })
+
+function goFetch(topic, callback) {
+  rp(endpoint + topic)
+  .then(function (parseBody) {
+      respo = parseBody;
+  })
+  .catch(function (err) {
+      // Crawling failed...
+      console.log("Failed " + err);
+      callback(0);
+  }).finally(function(){
+    console.log("Response api: " + respo);
+    callback(respo);
+  });
+}
 
 // localhost:3005
 app.listen(3005, () => {
