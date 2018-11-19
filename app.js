@@ -33,7 +33,7 @@ app.get("/test", (req, res) => {
 
 app.get('/history/:userId', (req, res) => {
   console.log("Fetching history by userId")
-   const queryString = "SELECT fecha, topic FROM user_logs where usuario = ? "
+   const queryString = "SELECT TOP 10 fecha, topic FROM user_logs where usuario = ? "
   connection.query(queryString, [req.params.userId], (err, rows, fields) => {
     if (err) {
       console.log("Failed to query for users: " + err)
@@ -43,6 +43,25 @@ app.get('/history/:userId', (req, res) => {
     }
     var historyUser = rows.map((row) => {
       return {"Date": row.fecha, "Topic": row.topic, "URL": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
+    })
+    res.json(historyUser)
+  })
+})
+
+app.get('/notification/:userId/:topic', (req, res) => {
+  var userId = req.params.userId;
+  var topic = req.params.topic;
+  console.log("Comparing results")
+  const queryString = " SELECT TOP 10 fecha, topic FROM user_logs where usuario = ? "
+  connection.query(queryString, [req.params.userId], (err, rows, fields) => {
+    if (err) {
+      console.log("Failed to query for users: " + err)
+      res.sendStatus(500)
+      return
+      // throw err
+    }
+    var historyUser = rows.map((row) => {
+      return {"Date": row.fecha, "Topic": row.topic, "URL": "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/search/" + row.topic + "/" + req.params.userId};
     })
     res.json(historyUser)
   })
