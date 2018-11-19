@@ -61,7 +61,7 @@ app.get('/notification/:userId/:topic', (req, res) => {
       // throw err
     }else{
       var result = rows.map((row) => {
-        row.topic
+       return  row.result
       })
       console.log("mysql got " + result);
     }
