@@ -19,11 +19,11 @@ app.use(function(req, res, next) {
 
 //Define conexion a db
 const connection = mysql.createConnection({
-  host: 'mysql-datos-2.cyufope5fgiy.us-east-1.rds.amazonaws.com',
+  host: 'datos2final.cr0c2d7y40q0.us-east-1.rds.amazonaws.com',
   port: 3306,
   user: 'root',
   password: 'root1234',
-  database: 'MySQL_Datos_2'
+  database: 'datosfinal'
 })
 
 
@@ -33,7 +33,7 @@ app.get("/test", (req, res) => {
 
 app.get('/history/:userId', (req, res) => {
   console.log("Fetching history by userId")
-   const queryString = "SELECT TOP 10 fecha, topic FROM user_logs where usuario = ? "
+   const queryString = " SELECT fecha, topic FROM history WHERE usuario = ? ORDER BY fecha DESC LIMIT 10 "
   connection.query(queryString, [req.params.userId], (err, rows, fields) => {
     if (err) {
       console.log("Failed to query for users: " + err)
@@ -42,7 +42,7 @@ app.get('/history/:userId', (req, res) => {
       // throw err
     }
     var historyUser = rows.map((row) => {
-      return {"Date": row.fecha, "Topic": row.topic, "URL": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
+      return {"Date": row.fecha, "Topic": row.topic, "URL": "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/search/" + row.topic + "/" + req.params.userId};
     })
     res.json(historyUser)
   })
