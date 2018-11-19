@@ -52,18 +52,18 @@ app.get('/notification/:userId/:topic', (req, res) => {
   var userId = req.params.userId;
   var topic = req.params.topic;
   console.log("Comparing results")
-  const queryString = " SELECT DISTINCT TOP 10 fecha, topic FROM user_logs where usuario = ? "
-  connection.query(queryString, [req.params.userId], (err, rows, fields) => {
+  const queryString = " SELECT result FROM history WHERE topic = ? AND usuario = ? ORDER BY fecha DESC LIMIT 1; "
+  connection.query(queryString, [topic, userId], (err, rows, fields) => {
     if (err) {
-      console.log("Failed to query for users: " + err)
+      console.log("Failed to retrieve: " + err)
       res.sendStatus(500)
       return
       // throw err
+    }else{
+      console.log("mysql got " + rows);
     }
-    var historyUser = rows.map((row) => {
-      return {"Date": row.fecha, "Topic": row.topic, "URL": "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/search/" + row.topic + "/" + req.params.userId};
-    })
-    res.json(historyUser)
+    
+    res.json("oki")
   })
 })
 
