@@ -33,7 +33,7 @@ app.get("/test", (req, res) => {
 
 app.get('/history/:userId', (req, res) => {
   console.log("Fetching history by userId")
-   const queryString = " SELECT DISTINCT fecha, topic FROM history WHERE usuario = ? ORDER BY fecha DESC LIMIT 10 "
+   const queryString = " SELECT fecha, topic FROM history WHERE usuario = ? GROUP BY topic ORDER BY fecha DESC LIMIT 10 "
   connection.query(queryString, [req.params.userId], (err, rows, fields) => {
     if (err) {
       console.log("Failed to query for users: " + err)
@@ -60,7 +60,10 @@ app.get('/notification/:userId/:topic', (req, res) => {
       return
       // throw err
     }else{
-      console.log("mysql got " + rows);
+      var result = rows.map((row) => {
+        row.topic
+      })
+      console.log("mysql got " + result);
     }
     
     res.json("oki")
