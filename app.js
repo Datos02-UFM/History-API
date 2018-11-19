@@ -52,7 +52,7 @@ app.get('/notification/:userId/:topic', (req, res) => {
   var userId = req.params.userId;
   var topic = req.params.topic;
   console.log("Comparing results")
-  const queryString = " SELECT TOP 10 fecha, topic FROM user_logs where usuario = ? "
+  const queryString = " SELECT TOP 10 fecha, topic FROM user_logs where usuario = ? group by fecha, topic "
   connection.query(queryString, [req.params.userId], (err, rows, fields) => {
     if (err) {
       console.log("Failed to query for users: " + err)
