@@ -61,17 +61,28 @@ app.get('/notification/:userId/:topic', (req, res) => {
       return
       // throw err
     }else{
-      var result = rows.map((row) => {
+      var resultSql = rows.map((row) => {
        return  row.result
       })
-      goFetch(topic, function(returnValue) {
-        if (returnValue != 0){
-          var apiResponse = returnValue;
-          console.log(JSON.parse(apiResponse["Result"]));
-          res.json(apiResponse)
-        }
-      }); 
-      console.log("mysql got " + result);
+      console.log("result sql " + resultSql);
+      if (resultSql.toString() === ""){
+        res.json("Este topic no esta en el historial del usuario.");
+      }else{
+        goFetch(topic, function(returnValue) {
+          if (returnValue != 0){
+            var apiResponse = JSON.parse(returnValue);
+            var resultApi = apiResponse["Result"];
+            console.log("result api " + resultApi);
+            if (resultSql.toString() === resultApi.toString()) {
+              console.log("array comparison " + true);
+              res.json("No existe nuevo contenido sobre este topic");
+            } else {
+              console.log("array comparison " + false);
+              res.json("Se generó nuevo contenido acerca de este topic");
+            }
+          }
+        }); 
+      }
     }
   })
 })
