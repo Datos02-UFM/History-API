@@ -67,6 +67,7 @@ app.get('/notification/:userId/:topic', (req, res) => {
       goFetch(topic, function(returnValue) {
         if (returnValue != 0){
           var apiResponse = returnValue;
+          console.log(apiResponse["Result"]);
           res.json(apiResponse)
         }
       }); 
