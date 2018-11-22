@@ -82,7 +82,7 @@ app.get('/notification/:userId/:topic', (req, res) => {
               res.json({"Topic": topic, "New Content":"No"});
             } else {
               console.log("array comparison " + false);
-              res.json({"Topic": topic, "New Content":"No"});
+              res.json({"Topic": topic, "New Content":"Yes", "Source": sourceApi});
             }
           }
         }); 
