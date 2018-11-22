@@ -7,7 +7,7 @@ const mysql = require('mysql')
 const morgan = require('morgan')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
-const endpoint = "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/search/";
+const endpoint = "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/fetch/";
  //logs con timings de requests 
 app.use(morgan('short'));
 //sessionId
@@ -52,8 +52,7 @@ app.get('/history/:userId', (req, res) => {
 app.get('/notification/:userId/:topic', (req, res) => {
   var userId = req.params.userId;
   var topic = req.params.topic;
-  console.log("Comparing results")
-  const queryString = " SELECT result FROM history WHERE topic = ? AND usuario = ? ORDER BY fecha DESC LIMIT 1; "
+  const queryString = " SELECT result, sourceAPI FROM history WHERE topic = ? AND usuario = ? ORDER BY fecha DESC LIMIT 1; "
   connection.query(queryString, [topic, userId], (err, rows, fields) => {
     if (err) {
       console.log("Failed to retrieve: " + err)
@@ -62,9 +61,8 @@ app.get('/notification/:userId/:topic', (req, res) => {
       // throw err
     }else{
       var resultSql = rows.map((row) => {
-       return  row.result
+        return {"Result": row.result, "Source": row.sourceAPI};
       })
-      console.log("result sql " + resultSql);
       if (resultSql.toString() === ""){
         res.json("Este topic no esta en el historial del usuario.");
       }else{
@@ -72,13 +70,19 @@ app.get('/notification/:userId/:topic', (req, res) => {
           if (returnValue != 0){
             var apiResponse = JSON.parse(returnValue);
             var resultApi = apiResponse["Result"];
-            console.log("result api " + resultApi);
-            if (resultSql.toString() === resultApi.toString()) {
+            var sourceApi = apiResponse["Source"];
+            var sqlResponse = "";
+            for(i=0; i<resultSql.length; i++){
+              if (resultSql[i]["Source"] == sourceApi){
+                sqlResponse = resultSql[i]["Result"];
+              }
+            }
+            if (sqlResponse.toString() === resultApi.toString()) {
               console.log("array comparison " + true);
-              res.json("No existe nuevo contenido sobre este topic");
+              res.json({"Topic": topic, "New Content":"No"});
             } else {
               console.log("array comparison " + false);
-              res.json("Se generó nuevo contenido acerca de este topic");
+              res.json({"Topic": topic, "New Content":"No"});
             }
           }
         }); 
@@ -97,7 +101,7 @@ function goFetch(topic, callback) {
       console.log("Failed " + err);
       callback(0);
   }).finally(function(){
-    console.log("Response api: " + respo);
+    //console.log("Response api: " + respo);
     callback(respo);
   });
 }
