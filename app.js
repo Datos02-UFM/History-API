@@ -79,7 +79,7 @@ app.get('/notification/:userId/:topic', (req, res) => {
             }
             if (sqlResponse.toString() === resultApi.toString()) {
               console.log("array comparison " + true);
-              res.json({"Topic": topic, "New Content":"No"});
+              res.json({"Topic": topic, "New Content":"No", "Source": sourceApi});
             } else {
               console.log("array comparison " + false);
               res.json({"Topic": topic, "New Content":"Yes", "Source": sourceApi});
