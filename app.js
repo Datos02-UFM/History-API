@@ -7,7 +7,7 @@ const mysql = require('mysql')
 const morgan = require('morgan')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
-const endpoint = "http://ec2-34-238-136-29.compute-1.amazonaws.com:3003/fetch/";
+const endpoint = "http://ec2-34-238-136-29.compute-1.amazonaws.com:3000/fetch/";
  //logs con timings de requests 
 app.use(morgan('short'));
 //sessionId
@@ -34,7 +34,7 @@ app.get("/test", (req, res) => {
 
 app.get('/history/:userId', (req, res) => {
   console.log("Fetching history by userId")
-   const queryString = " SELECT fecha, topic FROM history WHERE usuario = ? GROUP BY topic ORDER BY fecha DESC LIMIT 10 "
+   const queryString = " SELECT topic FROM history WHERE usuario = ? GROUP BY topic ORDER BY fecha DESC LIMIT 10 "
   connection.query(queryString, [req.params.userId], (err, rows, fields) => {
     if (err) {
       console.log("Failed to query for users: " + err)
